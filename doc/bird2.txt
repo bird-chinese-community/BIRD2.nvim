@@ -1,0 +1,191 @@
+*bird2.txt*	BIRD2 Configuration Support for Neovim
+
+Author:  BIRD Chinese Community <dev-bird@xmsl.dev>
+License: MPL-2.0
+Version: 1.0.6
+
+==============================================================================
+TABLE OF CONTENTS					*bird2-contents*
+
+    1. Introduction ................ |bird2-introduction|
+    2. Installation ................ |bird2-installation|
+    3. Configuration ............... |bird2-configuration|
+    4. Commands .................... |bird2-commands|
+    5. Lua API ..................... |bird2-lua-api|
+    6. Autocommands ................ |bird2-autocommands|
+    7. Health Check ............... |bird2-health|
+    8. Related Projects ............ |bird2-related|
+
+==============================================================================
+INTRODUCTION					*bird2-introduction*
+
+The bird2.nvim plugin provides Neovim support for BIRD2 (BIRD Internet
+Routing Daemon) configuration files.
+
+Built on modern Lua APIs, this plugin offers:
+	- Syntax highlighting for BIRD2 configuration
+	- Automatic filetype detection with heuristics
+	- Buffer-local settings and mappings
+	- Extensible Lua API
+	- :checkhealth integration
+
+==============================================================================
+INSTALLATION					*bird2-installation*
+
+LAZY.NVIM ~
+
+	lua require("bird2").setup() {
+	  "bird-chinese-community/bird2.nvim",
+	  ft = "bird2",
+	  config = function()
+	    require("bird2").setup()
+	  end
+	}
+
+PACKER.NVIM ~
+
+	use {
+	  "bird-chinese-community/bird2.nvim",
+	  config = function()
+	    require("bird2").setup()
+	  end
+	}
+
+MANUAL ~
+
+	git clone https://github.com/bird-chinese-community/bird2.nvim \
+	  ~/.local/share/nvim/site/pack/plugins/start/bird2.nvim
+
+==============================================================================
+CONFIGURATION					*bird2-configuration*
+
+DEFAULT SETTINGS ~
+
+	require("bird2").setup({
+	  enabled = true,           -- Enable the plugin
+	  heuristic_detect = true,  -- Enable content-based detection for .conf
+	})
+
+DISABLE HEURISTIC DETECTION ~
+
+	require("bird2").setup({
+	  heuristic_detect = false,
+	})
+
+CUSTOM FILETYPE DETECTION ~
+
+	vim.filetype.add({
+	  extension = {
+	    myext = "bird2",
+	  },
+	  pattern = {
+	    [".*%.myconf"] = "bird2",
+	  },
+	})
+
+==============================================================================
+COMMANDS						*bird2-commands*
+
+*:Bird2*
+
+	:Bird2[command]
+
+	Available commands:
+
+		version	Show plugin version
+		check	Run health checks
+		enable	Enable plugin for current buffer
+		disable Disable plugin for current buffer
+
+*:Bird2Health*
+
+	:Bird2Health
+
+	Alias for |:checkhealth| with the bird2 section.
+
+==============================================================================
+LUA API						*bird2-lua-api*
+
+*bird2.setup()*				*bird2.setup()*
+
+	require("bird2").setup(opts)
+
+	Initialize the plugin with configuration options.
+
+	Parameters: ~
+		{opts?} bird2.Config Configuration options
+
+*bird2.on_attach()*				*bird2.on_attach()*
+
+	require("bird2").on_attach(bufnr)
+
+	Manually trigger buffer setup. Called automatically when filetype is
+	detected.
+
+	Parameters: ~
+		{bufnr?} number Buffer number (default: 0)
+
+*bird2.looks_like_bird2()*			*bird2.looks_like_bird2()*
+
+	local is_bird2 = require("bird2").looks_like_bird2(bufnr)
+
+	Check if a buffer contains BIRD2 configuration. Scans the first 200
+	lines for BIRD2-specific patterns.
+
+	Parameters: ~
+		{bufnr?} number Buffer number (default: 0)
+
+	Returns: ~
+		boolean True if buffer looks like BIRD2 config
+
+==============================================================================
+AUTOCOMMANDS					*bird2-autocommands*
+
+*Bird2File*
+
+	Triggered after the plugin sets up a buffer.
+
+	Usage: >
+		vim.api.nvim_create_autocmd("User", {
+		  pattern = "Bird2File",
+		  callback = function(args)
+		    local bufnr = args.data.buf
+		    -- Your custom setup
+		  end,
+		})
+<
+
+FileType bird2 ~
+
+	The plugin sets up buffer-local options when filetype is detected.
+
+==============================================================================
+HEALTH CHECK					*bird2-health*
+
+*:checkhealth bird2*
+
+	Check plugin status and configuration.
+
+	Output includes:
+	- Plugin loading status
+	- Syntax file availability
+	- Neovim version compatibility
+	- Filetype detection status
+
+==============================================================================
+RELATED PROJECTS					*bird2-related*
+
+BIRD-tm-language-grammar ~
+	TextMate grammar for BIRD2
+	https://github.com/bird-chinese-community/bird-tm-language-grammar
+
+bird2.vim ~
+	Vim plugin
+	https://github.com/bird-chinese-community/bird2.vim
+
+vscode-bird2 ~
+	VS Code extension
+	https://github.com/bird-chinese-community/vscode-bird2-conf
+
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:

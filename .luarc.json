@@ -1,0 +1,25 @@
+{
+  "diagnostics": {
+    "enable": true,
+    "globals": [
+      "vim"
+    ]
+  },
+  "workspace": {
+    "library": [
+      "$VIMRUNTIME/lua",
+      "${3rd}/luv/library"
+    ],
+    "checkThirdParty": false
+  },
+  "runtime": {
+    "version": "LuaJIT",
+    "path": [
+      "lua/?.lua",
+      "lua/?/init.lua"
+    ]
+  },
+  "telemetry": {
+    "enable": false
+  }
+}

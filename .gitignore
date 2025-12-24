@@ -1,0 +1,39 @@
+# Lua Rocks
+luarocks/
+luarocks.*.lua
+
+# Neovim swap files
+*.swp
+*.swo
+*.swn
+*~
+
+# Compiled files
+*.vim.[co]
+*.lua.[co]
+
+# Tags
+tags
+TAGS
+
+# Documentation tags
+doc/tags
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+.*.sw*
+
+# Test coverage
+coverage/
+*.lcov
+
+# Busted
+busted.luassert.*
