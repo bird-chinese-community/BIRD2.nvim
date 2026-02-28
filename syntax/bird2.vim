@@ -58,7 +58,7 @@ syn match  bird2VpnRD      "\<[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}
 " ------------------------
 " Byte Strings (repository.bytestrings)
 " ------------------------
-syn match  bird2ByteString "\<hex:\%([0-9a-fA-F]\{2}\%([:\-\.[:space:]]*[0-9a-fA-F]\{2}\)*\)\?\>"
+syn match  bird2ByteString "\<hex:[0-9a-fA-F]\{2}\%([:\-\.[:space:]]*[0-9a-fA-F]\{2}\)*\>"
 syn match  bird2ByteString "\<[0-9a-fA-F]\{2}\%([:\-\.[:space:]]*[0-9a-fA-F]\{2}\)\{15,}\>"
 syn match  bird2ByteString "\<[0-9a-fA-F]\{32,}\>"
 
@@ -182,9 +182,9 @@ syn keyword bird2ConfigKw   hostname description debug log syslog stderr bird pr
 syn keyword bird2FlowspecKw flow4 flow6 dst src proto header dport sport icmp code tcp flags dscp dont_fragment is_fragment first_fragment last_fragment fragment label offset
 " Address keywords
 syn keyword bird2AddressKw  vpn4 vpn6 mpls aspa roa4 roa6
-syn match   bird2BfdPhraseKw "\<\%(strict\s\+bind\|zero\s\+udp6\s\+checksum\s\+rx\|idle\s\+tx\s\+interval\)\>"
-syn match   bird2BabelPhraseKw "\<\%(send\s\+timestamps\|rtt\s\+\%(cost\|min\|max\|decay\)\|next\s\+hop\s\+prefer\)\>"
-syn match   bird2BgpPhraseKw "\<\%(next\s\+hop\s\+\%(self\|address\|ibgp\|ebgp\)\|link\s\+local\s\+next\s\+hop\s\+format\|import\s\+table\|export\s\+table\|base\s\+table\|add\s\+paths\|aigp\s\+originate\|long\s\+lived\s\+graceful\s\+restart\|long\s\+lived\s\+stale\s\+time\|dynamic\s\+name\%(\s\+digits\)\?\|strict\s\+bind\|free\s\+bind\|ttl\s\+security\|multihop\s\+password\|rr\s\+client\|rs\s\+client\|advertise\s\+hostname\|interpret\s\+communities\|deterministic\s\+med\|default\s\+bgp_local_pref\|default\s\+bgp_med\|med\s\+metric\|igp\s\+metric\|missing\s\+lladdr\|gateway\s\+address\|forwarding\s\+addressed\|gateway\s\+recursive\|allow\s\+local\s\+as\|allow\s\+bogus\s\+as\|originate\s\+community\|full\s\+route\s\+table\|capabilities\)\>"
+syn match   bird2BfdPhraseKw "\<\%(strict\s\+bind\|zero\s\+udp6\s\+checksum\s\+rx\|idle\s\+tx\s\+interval\|multiplier\|keyed\|meticulous\)\>"
+syn match   bird2BabelPhraseKw "\<\%(send\s\+timestamps\|rtt\s\+\%(cost\|min\|max\|decay\)\|next\s\+hop\s\+prefer\|prefer\|native\)\>"
+syn match   bird2BgpPhraseKw "\<\%(next\s\+hop\s\+\%(self\|address\|ibgp\|ebgp\)\|link\s\+local\s\+next\s\+hop\s\+format\|import\s\+table\|export\s\+table\|base\s\+table\|add\s\+paths\|aigp\s\+originate\|long\s\+lived\s\+graceful\s\+restart\|long\s\+lived\s\+stale\s\+time\|dynamic\s\+name\%(\s\+digits\)\?\|free\s\+bind\|ttl\s\+security\|multihop\s\+password\|rr\s\+client\|rs\s\+client\|advertise\s\+hostname\|interpret\s\+communities\|deterministic\s\+med\|default\s\+bgp_local_pref\|default\s\+bgp_med\|med\s\+metric\|igp\s\+metric\|missing\s\+lladdr\|gateway\s\+address\|forwarding\s\+addressed\|gateway\s\+recursive\|allow\s\+local\s\+as\|allow\s\+bogus\s\+as\|originate\s\+community\|full\s\+route\s\+table\|capabilities\|primary\)\>"
 syn match   bird2OspfPhraseKw "\<\%(no\s\+summary\|transmit\s\+delay\|strict\s\+nonbroadcast\|stub\s\+router\|real\s\+bdr\|instance\s\+id\)\>"
 syn match   bird2RipPhraseKw "\<\%(split\s\+horizon\|honor\s\+neighbor\|honor\s\+always\|garbage\s\+time\|timeout\s\+time\)\>"
 syn match   bird2KernelPhraseKw "\<\%(merge\s\+paths\|kernel\s\+table\)\>"
@@ -266,7 +266,7 @@ syn match  bird2FunctionCall "[a-zA-Z_][a-zA-Z0-9_]*\ze\s*(" contains=bird2Built
 " Method Calls (repository.method-calls)
 " ------------------------
 syn match  bird2MethodCall  "\.\s*[a-zA-Z_][a-zA-Z0-9_]*\s*(" contains=bird2Accessor
-syn match  bird2PropertyAccess "\.\s*[a-zA-Z_][a-zA-Z0-9_]*" contains=bird2Accessor,bird2Property
+syn match  bird2PropertyAccess "\.\s*[a-zA-Z_][a-zA-Z0-9_]*\%(\s*(\)\@!" contains=bird2Accessor,bird2Property
 
 " ------------------------
 " Variable Declarations (repository.variable-declarations)
