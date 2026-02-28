@@ -157,11 +157,11 @@ syn keyword bird2Structure  table define include attribute eval ipv4 ipv6 local 
 " Protocol types
 syn keyword bird2ProtocolTypeKw static rip ospf bgp babel rpki bfd bmp device direct kernel pipe perf mrt aggregator l3vpn radv
 " Routing keywords
-syn keyword bird2RoutingKw  graceful restart preference disabled hold keepalive connect retry start delay error wait forget scan randomize router id route neighbor
+syn keyword bird2RoutingKw  graceful restart preference disabled hold keepalive connect start delay error wait forget scan randomize router id route neighbor
 " Interface keywords
 syn keyword bird2InterfaceKw interface type wired wireless tunnel rxcost limit hello update interval port tx class dscp priority rx buffer length check link rtt cost min max decay send timestamps
 " RPKI keywords
-syn keyword bird2RpkiKw      refresh expire transport ssh tcp user address version ignore private public key
+syn keyword bird2RpkiKw      refresh retry expire transport ssh tcp user address version ignore private public key
 syn match   bird2RpkiPhraseKw "\<\%(local\s\+address\|ignore\s\+max\s\+length\|min\s\+version\|max\s\+version\|bird\s\+private\s\+key\|remote\s\+public\s\+key\)\>"
 " Authentication keywords
 syn keyword bird2AuthKw     authentication none mac permissive password generate accept from to algorithm hmac sha1 sha256 sha384 sha512 blake2s128 blake2s256 blake2b256 blake2b512
