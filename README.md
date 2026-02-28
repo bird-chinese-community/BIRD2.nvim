@@ -167,6 +167,22 @@ autocmd BufRead,BufNewFile *.myext setfiletype BIRD2
 
 ## Contributing
 
+### Sync Syntax Source
+
+`syntax/bird2.vim` is stored as a regular file so this repository works when installed standalone.
+
+To sync syntax updates from `bird2.vim`:
+
+```bash
+bash scripts/sync-syntax.sh
+```
+
+Or use an explicit source path:
+
+```bash
+bash scripts/sync-syntax.sh /path/to/bird2.vim/syntax/bird2.vim
+```
+
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository

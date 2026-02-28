@@ -167,6 +167,22 @@ autocmd BufRead,BufNewFile *.myext setfiletype bird2
 
 ## 贡献
 
+### 同步语法源
+
+`syntax/bird2.vim` 保持为普通文件，确保本仓库单独安装时也可正常工作。
+
+从 `bird2.vim` 同步语法更新：
+
+```bash
+bash scripts/sync-syntax.sh
+```
+
+也可指定显式源路径：
+
+```bash
+bash scripts/sync-syntax.sh /path/to/bird2.vim/syntax/bird2.vim
+```
+
 欢迎贡献！请随时提交 Pull Request。
 
 1. Fork 本仓库
