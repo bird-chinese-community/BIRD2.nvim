@@ -28,15 +28,15 @@ syn region bird2Comment   start=/\/\*/ end=/\*\// contains=@Spell
 " Strings (repository.strings)
 " ------------------------
 syn region bird2String    start=+"+ skip=+\\"+ end=+"+ contains=bird2Escape
-syn region bird2String    start=+'+ skip=+\\'+ end=+'+
+syn match  bird2QuotedSymbol "'[0-9A-Za-z_.:-]\+'"
 syn match  bird2Escape    "\\." contained
 
 " ------------------------
 " Numbers & Time Units (repository.numbers)
 " ------------------------
 syn match  bird2HexNumber   "\<0x[0-9a-fA-F]\+\>"
-syn match  bird2Number      "\<[0-9]\+\>"
 syn match  bird2TimeUnit    "\<[0-9]\+\s*\(s\|ms\|us\)\>" contains=bird2Number
+syn match  bird2Number      "\<[0-9]\+\>"
 
 " ------------------------
 " IP Addresses (repository.ip-addresses)
@@ -46,19 +46,20 @@ syn match  bird2IPv4       "\<[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}
 " IPv6 patterns (simplified for Vim NFA)
 syn match  bird2IPv6       "\<[0-9a-fA-F:]\+::[0-9a-fA-F:]*\>\%(\/[0-9]\{1,3}\)\?"
 syn match  bird2IPv6       "::[0-9a-fA-F:]\+\>\%(\/[0-9]\{1,3}\)\?"
-syn match  bird2IPv6       "\<[0-9a-fA-F:]\{3,}\>\%(\/[0-9]\{1,3}\)\?"
+syn match  bird2IPv6       "\<[0-9a-fA-F]\{1,4}\%(:[0-9a-fA-F]\{0,4}\)\{1,7}\>\%(\/[0-9]\{1,3}\)\?"
 
 " ------------------------
 " VPN Route Distinguisher (repository.vpn-rd)
 " ------------------------
 syn match  bird2VpnRD      "\<[0-9]\+:[0-9]\+\>"
+syn match  bird2VpnRD      "\<[0-9]\+:[0-9]\+:[0-9]\+\>"
 syn match  bird2VpnRD      "\<[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}:[0-9]\+\>"
 
 " ------------------------
 " Byte Strings (repository.bytestrings)
 " ------------------------
-syn match  bird2ByteString "\<hex:[0-9a-fA-F]\{2}\%([:\-\s\.][0-9a-fA-F]\{2}\)\+\>"
-syn match  bird2ByteString "\<[0-9a-fA-F]\{2}\%([:\-][0-9a-fA-F]\{2}\)\{2,}\>"
+syn match  bird2ByteString "\<hex:\%([0-9a-fA-F]\{2}\%([:\-\.[:space:]]*[0-9a-fA-F]\{2}\)*\)\?\>"
+syn match  bird2ByteString "\<[0-9a-fA-F]\{2}\%([:\-\.[:space:]]*[0-9a-fA-F]\{2}\)\{15,}\>"
 syn match  bird2ByteString "\<[0-9a-fA-F]\{32,}\>"
 
 " ------------------------
@@ -78,15 +79,15 @@ syn match  bird2Prefix     "\<[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}
 " ------------------------
 " Filter Definitions (repository.filter-definitions)
 " ------------------------
-syn region bird2FilterDef  matchgroup=bird2Keyword start="\<filter\>\s\+\ze[a-zA-Z_][a-zA-Z0-9_]*\s*{" matchgroup=bird2Delimiter end="}" contains=bird2FilterName,@bird2All fold keepend
-syn match  bird2FilterName "[a-zA-Z_][a-zA-Z0-9_]*" contained nextgroup=bird2FilterBody skipwhite skipnl
+syn region bird2FilterDef  matchgroup=bird2Keyword start="\<filter\>\s\+\ze\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)\s*{" matchgroup=bird2Delimiter end="}" contains=bird2FilterName,@bird2All fold keepend
+syn match  bird2FilterName "\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)" contained nextgroup=bird2FilterBody skipwhite skipnl
 syn region bird2FilterBody matchgroup=bird2Delimiter start="{" end="}" contained contains=@bird2All fold
 
 " ------------------------
 " Function Definitions (repository.function-definitions)
 " ------------------------
-syn region bird2FunctionDef matchgroup=bird2Keyword start="\<function\>\s\+\ze[a-zA-Z_][a-zA-Z0-9_]*\s*(" matchgroup=bird2Delimiter end="}" contains=bird2FunctionName,bird2FunctionParams,@bird2All fold keepend
-syn match  bird2FunctionName "[a-zA-Z_][a-zA-Z0-9_]*" contained nextgroup=bird2FunctionParams skipwhite
+syn region bird2FunctionDef matchgroup=bird2Keyword start="\<function\>\s\+\ze\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)\s*(" matchgroup=bird2Delimiter end="}" contains=bird2FunctionName,bird2FunctionParams,@bird2All fold keepend
+syn match  bird2FunctionName "\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)" contained nextgroup=bird2FunctionParams skipwhite
 syn region bird2FunctionParams matchgroup=bird2Delimiter start="(" end=")" contained contains=bird2Type,bird2Variable nextgroup=bird2ReturnType,bird2FunctionBody skipwhite skipnl
 syn match  bird2ReturnType "->" contained nextgroup=bird2Type skipwhite
 syn region bird2FunctionBody matchgroup=bird2Delimiter start="{" end="}" contained contains=@bird2All fold
@@ -94,21 +95,21 @@ syn region bird2FunctionBody matchgroup=bird2Delimiter start="{" end="}" contain
 " ------------------------
 " Template Definitions (repository.template-definitions)
 " ------------------------
-syn match  bird2TemplateDef "\<template\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s\+[a-zA-Z_][a-zA-Z0-9_]*\s*{" contains=bird2Keyword,bird2ProtocolTypeKw,bird2TemplateName nextgroup=bird2TemplateBody
+syn match  bird2TemplateDef "\<template\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\%(\s\+\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)\%(\s\+from\s\+\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)\)\?\)\?\s*{" contains=bird2Keyword,bird2ProtocolTypeKw,bird2TemplateName nextgroup=bird2TemplateBody
 syn match  bird2ProtocolType "[a-zA-Z_][a-zA-Z0-9_]*" contained nextgroup=bird2TemplateName skipwhite
-syn match  bird2TemplateName "[a-zA-Z_][a-zA-Z0-9_]*" contained nextgroup=bird2TemplateBody skipwhite skipnl
+syn match  bird2TemplateName "\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)" contained nextgroup=bird2TemplateBody skipwhite skipnl
 syn region bird2TemplateBody matchgroup=bird2Delimiter start="{" end="}" contained contains=@bird2All fold
 
 " ------------------------
 " Protocol Definitions (repository.protocol-definitions)
 " ------------------------
 " Protocol with template
-syn match  bird2ProtocolDefWithTemplate "\<protocol\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s\+[a-zA-Z_][a-zA-Z0-9_]*\s\+from\s\+[a-zA-Z_][a-zA-Z0-9_]*\s*{" contains=bird2Keyword,bird2ProtocolTypeKw,bird2ProtocolName,bird2TemplateName nextgroup=bird2ProtocolBody
+syn match  bird2ProtocolDefWithTemplate "\<protocol\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s\+\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)\s\+from\s\+\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)\s*{" contains=bird2Keyword,bird2ProtocolTypeKw,bird2ProtocolName,bird2TemplateName nextgroup=bird2ProtocolBody
 " Protocol with name
-syn match  bird2ProtocolDefWithName "\<protocol\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s\+[a-zA-Z_][a-zA-Z0-9_]*\s*{" contains=bird2Keyword,bird2ProtocolTypeKw,bird2ProtocolName nextgroup=bird2ProtocolBody
+syn match  bird2ProtocolDefWithName "\<protocol\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s\+\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)\s*{" contains=bird2Keyword,bird2ProtocolTypeKw,bird2ProtocolName nextgroup=bird2ProtocolBody
 " Anonymous protocol
 syn match  bird2ProtocolDefAnonymous "\<protocol\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s*{" contains=bird2Keyword,bird2ProtocolTypeKw nextgroup=bird2ProtocolBody
-syn match  bird2ProtocolName "[a-zA-Z_][a-zA-Z0-9_]*" contained nextgroup=bird2ProtocolBody skipwhite skipnl
+syn match  bird2ProtocolName "\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)" contained nextgroup=bird2ProtocolBody skipwhite skipnl
 syn region bird2ProtocolBody matchgroup=bird2Delimiter start="{" end="}" contained contains=@bird2All fold
 
 " ------------------------
@@ -118,20 +119,28 @@ syn match  bird2NextHopIPv4 "\<next hop\>\s\+ipv4\s\+[0-9\.]\+" contains=bird2Ro
 syn match  bird2NextHopIPv6 "\<next hop\>\s\+ipv6\s\+[0-9a-fA-F:]\+" contains=bird2RoutingKw,bird2IPv6
 syn match  bird2NextHopSelf "\<next hop\>\s\+self\>" contains=bird2RoutingKw,bird2SemanticModifier
 syn match  bird2ExtendedNextHop "\<extended next hop\>\s\+\%(on\|off\)\>" contains=bird2RoutingKw,bird2SemanticModifier
+syn match  bird2NextHopPrefer "\<next hop\>\s\+prefer\s\+\%(native\|ipv6\)\>" contains=bird2RoutingKw,bird2SemanticModifier
+syn match  bird2NextHopKeep   "\<next hop\>\s\+keep\>" contains=bird2RoutingKw,bird2SemanticModifier
+syn match  bird2NextHopAddr   "\<next hop\>\s\+address\s\+[0-9a-fA-F:.]\+" contains=bird2RoutingKw,bird2IPv4,bird2IPv6
+syn match  bird2RequireExtNexthop "\<require extended next hop\>\s\+\%(on\|off\)\>" contains=bird2RoutingKw,bird2SemanticModifier
 
 " ------------------------
 " Neighbor Statements (repository.neighbor-statements)
 " ------------------------
-syn match  bird2NeighborStmt "\<neighbor\>\s\+[0-9a-fA-F:.]\+\s*\%(%\s*'[^']\+'\)\?\s\+as\s\+[0-9]\+" contains=bird2RoutingKw,bird2IPv4,bird2IPv6,bird2String,bird2Number
+syn match  bird2NeighborStmt "\<neighbor\>\s\+[0-9a-fA-F:.]\+\s*\%(%\s*\%('[^']\+'\|[A-Za-z0-9_.:-]\+\)\)\?\s\+\%(as\s\+[0-9]\+\)\?" contains=bird2RoutingKw,bird2IPv4,bird2IPv6,bird2String,bird2Number
+syn match  bird2NeighborRange "\<neighbor\>\s\+range\s\+[0-9a-fA-F:.\/]\+\%(\s\+as\s\+[0-9]\+\)\?" contains=bird2RoutingKw,bird2IPv4,bird2IPv6,bird2Prefix,bird2Number
+syn match  bird2NeighborPort "\<neighbor\>\s\+[0-9a-fA-F:.]\+\s\+port\s\+[0-9]\+\>" contains=bird2RoutingKw,bird2IPv4,bird2IPv6,bird2Number
+syn match  bird2NeighborRole "\<neighbor\>\s\+[0-9a-fA-F:.]\+\s\+\%(internal\|external\)\>" contains=bird2RoutingKw,bird2IPv4,bird2IPv6,bird2SemanticModifier
+syn match  bird2NeighborOnlink "\<neighbor\>\s\+[0-9a-fA-F:.]\+\s\+onlink\>" contains=bird2RoutingKw,bird2IPv4,bird2IPv6
 syn match  bird2SourceAddress "\<source address\>\s\+[0-9a-fA-F:.]\+" contains=bird2RoutingKw,bird2IPv4,bird2IPv6
 
 " ------------------------
 " Import/Export Statements (repository.import-export-statements)
 " ------------------------
-syn match  bird2ImportFilter "\<import\>\s\+filter\s\+[a-zA-Z_][a-zA-Z0-9_]*" contains=bird2Keyword,bird2FilterReference
+syn match  bird2ImportFilter "\<import\>\s\+filter\s\+\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)" contains=bird2Keyword,bird2FilterReference
 syn region bird2ImportFilterInline matchgroup=bird2Keyword start="\<import\>\s\+filter\s*{" matchgroup=bird2Delimiter end="}" contains=@bird2All fold keepend
 syn region bird2ExportWhere matchgroup=bird2Keyword start="\<export\>\s\+where\>" end=";" contains=@bird2All
-syn match  bird2ExportFilter "\<export\>\s\+filter\s\+[a-zA-Z_][a-zA-Z0-9_]*" contains=bird2Keyword,bird2FilterReference
+syn match  bird2ExportFilter "\<export\>\s\+filter\s\+\%([a-zA-Z_][a-zA-Z0-9_]*\|'[0-9A-Za-z_.:-]\+'\)" contains=bird2Keyword,bird2FilterReference
 
 " ------------------------
 " Print Statements (repository.print-statements)
@@ -173,21 +182,28 @@ syn keyword bird2ConfigKw   hostname description debug log syslog stderr bird pr
 syn keyword bird2FlowspecKw flow4 flow6 dst src proto header dport sport icmp code tcp flags dscp dont_fragment is_fragment first_fragment last_fragment fragment label offset
 " Address keywords
 syn keyword bird2AddressKw  vpn4 vpn6 mpls aspa roa4 roa6
+syn match   bird2BfdPhraseKw "\<\%(strict\s\+bind\|zero\s\+udp6\s\+checksum\s\+rx\|idle\s\+tx\s\+interval\)\>"
+syn match   bird2BabelPhraseKw "\<\%(send\s\+timestamps\|rtt\s\+\%(cost\|min\|max\|decay\)\|next\s\+hop\s\+prefer\)\>"
+syn match   bird2BgpPhraseKw "\<\%(next\s\+hop\s\+\%(self\|address\|ibgp\|ebgp\)\|link\s\+local\s\+next\s\+hop\s\+format\|import\s\+table\|export\s\+table\|base\s\+table\|add\s\+paths\|aigp\s\+originate\|long\s\+lived\s\+graceful\s\+restart\|long\s\+lived\s\+stale\s\+time\|dynamic\s\+name\%(\s\+digits\)\?\|strict\s\+bind\|free\s\+bind\|ttl\s\+security\|multihop\s\+password\|rr\s\+client\|rs\s\+client\|advertise\s\+hostname\|interpret\s\+communities\|deterministic\s\+med\|default\s\+bgp_local_pref\|default\s\+bgp_med\|med\s\+metric\|igp\s\+metric\|missing\s\+lladdr\|gateway\s\+address\|forwarding\s\+addressed\|gateway\s\+recursive\|allow\s\+local\s\+as\|allow\s\+bogus\s\+as\|originate\s\+community\|full\s\+route\s\+table\|capabilities\)\>"
+syn match   bird2OspfPhraseKw "\<\%(no\s\+summary\|transmit\s\+delay\|strict\s\+nonbroadcast\|stub\s\+router\|real\s\+bdr\|instance\s\+id\)\>"
+syn match   bird2RipPhraseKw "\<\%(split\s\+horizon\|honor\s\+neighbor\|honor\s\+always\|garbage\s\+time\|timeout\s\+time\)\>"
+syn match   bird2KernelPhraseKw "\<\%(merge\s\+paths\|kernel\s\+table\)\>"
+syn match   bird2PipePhraseKw "\<\%(mode\s\+\%(opaque\|transparent\|GRE\)\)\>"
 
 " ------------------------
 " Semantic Modifiers (repository.semantic-modifiers)
 " ------------------------
-syn keyword bird2SemanticModifier self on off remote extended
+syn keyword bird2SemanticModifier self on off remote extended native ipv6 internal external
 
 " ------------------------
 " Built-in Functions (repository.builtin-functions)
 " ------------------------
-syn keyword bird2BuiltinFunc defined unset print printn roa_check aspa_check aspa_check_downstream aspa_check_upstream from_hex format prepend add delete filter empty reset bt_assert bt_test_suite bt_test_same
+syn keyword bird2BuiltinFunc defined unset roa_check aspa_check aspa_check_downstream aspa_check_upstream from_hex format append prepend add delete empty reset bt_assert bt_test_suite bt_test_same
 
 " ------------------------
 " Method Properties (repository.method-properties)
 " ------------------------
-syn keyword bird2Property   first last last_nonaggregated len asn data data1 data2 is_v4 ip src dst rd maxlen type mask min max
+syn keyword bird2Property   first last last_nonaggregated len asn data data1 data2 is_v4 ip src dst rd maxlen type mask min max contained
 
 " ------------------------
 " Route Attributes (repository.route-attributes)
@@ -197,30 +213,16 @@ syn keyword bird2RouteAttr  net scope preference from gw proto source dest ifnam
 " ------------------------
 " Data Types (repository.data-types)
 " ------------------------
-syn keyword bird2Type       int bool ip prefix rd pair quad ec lc string bytestring bgpmask bgppath clist eclist lclist set enum route
+syn match   bird2Type       "\<\%(\%(int\|pair\|quad\|ip\|prefix\|ec\|lc\|rd\|enum\)\s\+set\|int\|bool\|ip\|prefix\|rd\|pair\|quad\|ec\|lc\|string\|bytestring\|bgpmask\|bgppath\|clist\|eclist\|lclist\|set\|enum\|route\)\>"
 
 " ------------------------
 " Operators (repository.operators)
 " ------------------------
-syn match  bird2Comparison  "=="
-syn match  bird2Comparison  "!="
-syn match  bird2Comparison  "<="
-syn match  bird2Comparison  ">="
-syn match  bird2Comparison  "<"
-syn match  bird2Comparison  ">"
-syn match  bird2Comparison  "\~"
-syn match  bird2Comparison  "!\~"
-syn match  bird2Logical     "&&"
-syn match  bird2Logical     "||"
-syn match  bird2Logical     "!"
-syn match  bird2Logical     "->"
-syn match  bird2Arithmetic  "+"
-syn match  bird2Arithmetic  "-"
-syn match  bird2Arithmetic  "\*"
-syn match  bird2Arithmetic  "/"
-syn match  bird2Arithmetic  "%"
+syn match  bird2Comparison  "!\~\|==\|!=\|<=\|>=\|=\|<\|>\|\~"
+syn match  bird2Logical     "&&\|||\|->\|!"
+syn match  bird2Concat      "++"
 syn match  bird2Range       "\.\."
-syn match  bird2Assignment  "=" contained
+syn match  bird2Arithmetic  "\%(+\ze[^+]\|-\ze[^>]\|\*\|/\|%\)"
 syn match  bird2Accessor    "\."
 
 " ------------------------
@@ -269,7 +271,7 @@ syn match  bird2PropertyAccess "\.\s*[a-zA-Z_][a-zA-Z0-9_]*" contains=bird2Acces
 " ------------------------
 " Variable Declarations (repository.variable-declarations)
 " ------------------------
-syn match  bird2VarDecl     "\<\%(int\|bool\|ip\|prefix\|rd\|pair\|quad\|ec\|lc\|string\|bytestring\|bgpmask\|bgppath\|clist\|eclist\|lclist\|set\|enum\|route\)\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s*\%(=\|;\)" contains=bird2Type,bird2Variable
+syn match  bird2VarDecl     "\<\%(\%(int\|pair\|quad\|ip\|prefix\|ec\|lc\|rd\|enum\)\s\+set\|int\|bool\|ip\|prefix\|rd\|pair\|quad\|ec\|lc\|string\|bytestring\|bgpmask\|bgppath\|clist\|eclist\|lclist\|set\|enum\|route\)\>\s\+[a-zA-Z_][a-zA-Z0-9_]*\s*\%(=\|;\)" contains=bird2Type,bird2Variable
 
 " ------------------------
 " Symbols/Variables (repository.symbols)
@@ -284,13 +286,14 @@ syn match  bird2Delimiter   "[{}()\[\];,]"
 " ------------------------
 " Cluster for all patterns
 " ------------------------
-syn cluster bird2All contains=bird2Comment,bird2String,bird2Escape,bird2HexNumber,bird2Number,bird2TimeUnit,bird2IPv4,bird2IPv6,bird2VpnRD,bird2ByteString,bird2BgpPath,bird2BgpWildcard,bird2ASN,bird2Prefix,bird2FilterDef,bird2FunctionDef,bird2TemplateDef,bird2ProtocolDefWithTemplate,bird2ProtocolDefWithName,bird2ProtocolDefAnonymous,bird2NextHopIPv4,bird2NextHopIPv6,bird2NextHopSelf,bird2ExtendedNextHop,bird2NeighborStmt,bird2SourceAddress,bird2ImportFilter,bird2ImportFilterInline,bird2ExportWhere,bird2ExportFilter,bird2PrintStmt,bird2ControlFlow,bird2CaseElse,bird2FlowControl,bird2Structure,bird2ProtocolTypeKw,bird2RoutingKw,bird2InterfaceKw,bird2RpkiKw,bird2RpkiPhraseKw,bird2AuthKw,bird2TimeKw,bird2ConfigKw,bird2FlowspecKw,bird2AddressKw,bird2SemanticModifier,bird2BuiltinFunc,bird2Property,bird2RouteAttr,bird2Type,bird2Comparison,bird2Logical,bird2Arithmetic,bird2Range,bird2Assignment,bird2Accessor,bird2BoolConst,bird2SpecialConst,bird2ScopeConst,bird2SourceConst,bird2DestConst,bird2RoaConst,bird2AspaConst,bird2NetConst,bird2MplsConst,bird2FilterReference,bird2UserVariable,bird2FunctionCall,bird2MethodCall,bird2PropertyAccess,bird2VarDecl,bird2Variable,bird2Delimiter,bird2Keyword
+syn cluster bird2All contains=bird2Comment,bird2String,bird2QuotedSymbol,bird2Escape,bird2HexNumber,bird2Number,bird2TimeUnit,bird2IPv4,bird2IPv6,bird2VpnRD,bird2ByteString,bird2BgpPath,bird2BgpWildcard,bird2ASN,bird2Prefix,bird2FilterDef,bird2FunctionDef,bird2TemplateDef,bird2ProtocolDefWithTemplate,bird2ProtocolDefWithName,bird2ProtocolDefAnonymous,bird2NextHopIPv4,bird2NextHopIPv6,bird2NextHopSelf,bird2ExtendedNextHop,bird2NextHopPrefer,bird2NextHopKeep,bird2NextHopAddr,bird2RequireExtNexthop,bird2NeighborStmt,bird2NeighborRange,bird2NeighborPort,bird2NeighborRole,bird2NeighborOnlink,bird2SourceAddress,bird2ImportFilter,bird2ImportFilterInline,bird2ExportWhere,bird2ExportFilter,bird2PrintStmt,bird2ControlFlow,bird2CaseElse,bird2FlowControl,bird2Structure,bird2ProtocolTypeKw,bird2RoutingKw,bird2InterfaceKw,bird2RpkiKw,bird2RpkiPhraseKw,bird2AuthKw,bird2TimeKw,bird2ConfigKw,bird2FlowspecKw,bird2AddressKw,bird2BfdPhraseKw,bird2BabelPhraseKw,bird2BgpPhraseKw,bird2OspfPhraseKw,bird2RipPhraseKw,bird2KernelPhraseKw,bird2PipePhraseKw,bird2SemanticModifier,bird2BuiltinFunc,bird2Property,bird2RouteAttr,bird2Type,bird2Comparison,bird2Logical,bird2Concat,bird2Arithmetic,bird2Range,bird2Accessor,bird2BoolConst,bird2SpecialConst,bird2ScopeConst,bird2SourceConst,bird2DestConst,bird2RoaConst,bird2AspaConst,bird2NetConst,bird2MplsConst,bird2FilterReference,bird2UserVariable,bird2FunctionCall,bird2MethodCall,bird2PropertyAccess,bird2VarDecl,bird2Variable,bird2Delimiter,bird2Keyword
 
 " ------------------------
 " Links to default highlight groups
 " ------------------------
 hi def link bird2Comment          Comment
 hi def link bird2String           String
+hi def link bird2QuotedSymbol     Identifier
 hi def link bird2Escape           SpecialChar
 hi def link bird2HexNumber        Number
 hi def link bird2Number           Number
@@ -326,7 +329,15 @@ hi def link bird2NextHopIPv4      Statement
 hi def link bird2NextHopIPv6      Statement
 hi def link bird2NextHopSelf      Statement
 hi def link bird2ExtendedNextHop  Statement
+hi def link bird2NextHopPrefer    Statement
+hi def link bird2NextHopKeep      Statement
+hi def link bird2NextHopAddr      Statement
+hi def link bird2RequireExtNexthop Statement
 hi def link bird2NeighborStmt     Statement
+hi def link bird2NeighborRange    Statement
+hi def link bird2NeighborPort     Statement
+hi def link bird2NeighborRole     Statement
+hi def link bird2NeighborOnlink   Statement
 hi def link bird2SourceAddress    Statement
 hi def link bird2ImportFilter     Statement
 hi def link bird2ImportFilterInline Statement
@@ -349,6 +360,13 @@ hi def link bird2TimeKw           Keyword
 hi def link bird2ConfigKw         Keyword
 hi def link bird2FlowspecKw       Keyword
 hi def link bird2AddressKw        Keyword
+hi def link bird2BfdPhraseKw      Keyword
+hi def link bird2BabelPhraseKw    Keyword
+hi def link bird2BgpPhraseKw      Keyword
+hi def link bird2OspfPhraseKw     Keyword
+hi def link bird2RipPhraseKw      Keyword
+hi def link bird2KernelPhraseKw   Keyword
+hi def link bird2PipePhraseKw     Keyword
 hi def link bird2SemanticModifier Keyword
 
 hi def link bird2BuiltinFunc      Function
@@ -358,9 +376,9 @@ hi def link bird2Type             Type
 
 hi def link bird2Comparison       Operator
 hi def link bird2Logical          Operator
+hi def link bird2Concat           Operator
 hi def link bird2Arithmetic       Operator
 hi def link bird2Range            Operator
-hi def link bird2Assignment       Operator
 hi def link bird2Accessor         Delimiter
 
 hi def link bird2BoolConst        Constant
