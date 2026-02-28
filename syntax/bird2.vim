@@ -155,7 +155,7 @@ syn keyword bird2Structure  table define include attribute eval ipv4 ipv6 local 
 " Functional Keywords (repository.functional-keywords)
 " ------------------------
 " Protocol types
-syn keyword bird2ProtocolTypeKw static rip ospf bgp babel rpki bfd device direct kernel pipe perf mrt aggregator l3vpn radv
+syn keyword bird2ProtocolTypeKw static rip ospf bgp babel rpki bfd bmp device direct kernel pipe perf mrt aggregator l3vpn radv
 " Routing keywords
 syn keyword bird2RoutingKw  graceful restart preference disabled hold keepalive connect retry start delay error wait forget scan randomize router id route neighbor
 " Interface keywords
@@ -172,7 +172,7 @@ syn keyword bird2ConfigKw   hostname description debug log syslog stderr bird pr
 " Flowspec keywords
 syn keyword bird2FlowspecKw flow4 flow6 dst src proto header dport sport icmp code tcp flags dscp dont_fragment is_fragment first_fragment last_fragment fragment label offset
 " Address keywords
-syn keyword bird2AddressKw  vpn vpn4 vpn6 mpls aspa roa roa4 roa6
+syn keyword bird2AddressKw  vpn4 vpn6 mpls aspa roa4 roa6
 
 " ------------------------
 " Semantic Modifiers (repository.semantic-modifiers)
