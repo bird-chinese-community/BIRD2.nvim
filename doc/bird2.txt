@@ -2,7 +2,7 @@
 
 Author:  BIRD Chinese Community <dev-bird@xmsl.dev>
 License: MPL-2.0
-Version: 1.0.6
+Version: 1.0.7
 
 ==============================================================================
 TABLE OF CONTENTS					*bird2-contents*

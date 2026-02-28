@@ -11,7 +11,7 @@ vim.api.nvim_buf_create_user_command(0, "Bird2", function(opts)
   local subcommand = opts.fargs[1]
 
   if subcommand == "version" then
-    print("bird2.nvim 1.0.6")
+    print("bird2.nvim 1.0.7")
   elseif subcommand == "check" then
     require("bird2.health").check()
   elseif subcommand == "disable" then
